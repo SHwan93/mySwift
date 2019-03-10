@@ -70,24 +70,54 @@ class BucketListViewController: UIViewController, BucketListDisplayLogic
     @IBOutlet weak var totalPriceLbl: UILabel!
     
     var displayedBucketList: [BucketList.Something.ViewModel.ViewModelMenu] = []
+    lazy var footerView: UIButton = {
+       let btn = UIButton(type: UIButton.ButtonType.system)
+        btn.backgroundColor = .lightGray
+        btn.setTitle("MORE +", for: .normal)
+        btn.setTitleColor(UIColor.orange, for: .normal)
+        btn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
+        btn.backgroundColor = .clear
+        btn.addTarget(self, action: #selector(more(_:)), for: .touchUpInside)
+        return btn
+    }()
+    
     
     override func viewDidLoad()
   {
     super.viewDidLoad()
     self.navigationController?.navigationBar.isHidden = false
     self.navigationItem.title = "Bucket"
+    self.navigationItem.hidesBackButton = true
     
     TV.dataSource = self
     TV.delegate = self
     TV.separatorStyle = .none
     TV.backgroundColor = UIColor(red: 240/255, green: 240/255, blue: 240/255, alpha: 1.0)
+    footerView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: 45)
+    TV.tableFooterView = footerView
+    
     
     let nibName = UINib(nibName: "MenuListTableViewCell", bundle: nil)
     TV.register(nibName, forCellReuseIdentifier: "myCell")
     fetchTVData()
   }
+    
+    @objc func more(_ sender: Any) {
+        self.router?.backToList(source: self)
+    }
+    
   // MARK: Do something
-  
+    @IBAction func cancel(_ sender: UIButton) {
+        let alert = UIAlertController(title: "Are you sure to canel?", message: nil, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "CANCEL", style: .default, handler: nil))
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { (_) in
+            
+            Bucket.sharedInstance.List = []
+            self.router?.backToList(source: self)
+        }))
+        present(alert, animated: true, completion: nil)
+    }
+    
   //@IBOutlet weak var nameTextField: UITextField!
     @IBAction func buy(_ sender: UIButton) {
         let alert = UIAlertController(title: "Are you sure to buy?", message: nil, preferredStyle: .alert)
@@ -131,6 +161,7 @@ extension BucketListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath) as! MenuListTableViewCell
         cell.backgroundColor = .clear
+        cell.selectionStyle = .none
         cell.name?.text = displayedBucketList[indexPath.row].name
         cell.price?.text = displayedBucketList[indexPath.row].price
         return cell

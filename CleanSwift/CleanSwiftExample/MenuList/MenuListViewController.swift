@@ -129,6 +129,7 @@ extension MenuListViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath) as! MenuListTableViewCell
         cell.backgroundColor = .clear
+        cell.selectionStyle = .none
         cell.name?.text = displayedOrders[indexPath.row].name
         cell.price?.text = displayedOrders[indexPath.row].price
         return cell
